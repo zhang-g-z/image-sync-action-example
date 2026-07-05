@@ -1,1 +1,1 @@
-docker.io/grobid/grobid:0.9.0-full: "registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full"
+grobid/grobid:0.9.0-full: "registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full"
