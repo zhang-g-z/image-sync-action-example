@@ -1,3 +1,6 @@
-registry.cn-hangzhou.aliyuncs.com/zgz521:
+registry.cn-hangzhou.aliyuncs.com:
   username: ${ACR_USERNAME}
   password: ${ACR_PASSWORD}
+docker.io:
+  username: ${DOCKERHUB_USERNAME}
+  password: ${DOCKERHUB_PASSWORD}
