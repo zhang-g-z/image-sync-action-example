@@ -20,8 +20,9 @@ jobs:
 
       - name: Copy GROBID image to Aliyun ACR
         run: |
-          skopeo copy --all \
-            --src-creds "${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_PASSWORD }}" \
+          skopeo copy \
+            --override-os linux \
+            --override-arch amd64 \
             --dest-creds "${{ secrets.ACR_USERNAME }}:${{ secrets.ACR_PASSWORD }}" \
             docker://docker.io/grobid/grobid:0.9.0-full \
             docker://registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
