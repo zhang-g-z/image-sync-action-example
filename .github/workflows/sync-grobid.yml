@@ -1,4 +1,4 @@
-name: Sync GROBID Image
+name: Sync Image
 
 on:
   workflow_dispatch:
@@ -36,14 +36,26 @@ jobs:
             --password-stdin \
             registry.cn-hangzhou.aliyuncs.com
 
-      - name: Pull source image
+      - name: Pull source image1
         run: |
-          docker pull --platform linux/amd64 grobid/grobid:0.9.0-full
+          docker pull --platform linux/amd64 prom/prometheus:latest
+
+      - name: Pull source image2
+        run: |
+          docker pull --platform linux/amd64 grafana/grafana:latest
+
+      - name: Tag image1
+        run: |
+          docker tag prom/prometheus:latest registry.cn-hangzhou.aliyuncs.com/zgz521/prometheus:latest
 
       - name: Tag image
         run: |
-          docker tag grobid/grobid:0.9.0-full registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
+          docker tag grafana/grafana:latest registry.cn-hangzhou.aliyuncs.com/zgz521/grafana:latest
 
-      - name: Push image to Aliyun ACR
+      - name: Push image1 to Aliyun ACR
         run: |
-          docker push registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
+          docker push registry.cn-hangzhou.aliyuncs.com/zgz521/prometheus:latest
+          
+      - name: Push image1 to Aliyun ACR
+        run: |
+          docker push registry.cn-hangzhou.aliyuncs.com/zgz521/grafana:latest
