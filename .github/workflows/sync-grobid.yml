@@ -8,21 +8,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install skopeo
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y skopeo
-
       - name: Check secrets
+        shell: bash
         run: |
-          test -n "${{ secrets.ACR_USERNAME }}"
-          test -n "${{ secrets.ACR_PASSWORD }}"
+          echo "ACR_USERNAME=${ACR_USERNAME}"
+          echo "ACR_PASSWORD length=${#ACR_PASSWORD}"
 
-      - name: Copy GROBID image to Aliyun ACR
+          if [ -z "$ACR_USERNAME" ]; then
+            echo "ACR_USERNAME is empty"
+            exit 1
+          fi
+
+          if [ -z "$ACR_PASSWORD" ]; then
+            echo "ACR_PASSWORD is empty"
+            exit 1
+          fi
+
+          echo "ACR_PASSWORD masked preview=${ACR_PASSWORD:0:2}****${ACR_PASSWORD: -2}"
+        env:
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Login to Aliyun ACR
         run: |
-          skopeo copy \
-            --override-os linux \
-            --override-arch amd64 \
-            --dest-creds "${{ secrets.ACR_USERNAME }}:${{ secrets.ACR_PASSWORD }}" \
-            docker://docker.io/grobid/grobid:0.9.0-full \
-            docker://registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username="${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            registry.cn-hangzhou.aliyuncs.com
+
+      - name: Pull source image
+        run: |
+          docker pull --platform linux/amd64 grobid/grobid:0.9.0-full
+
+      - name: Tag image
+        run: |
+          docker tag grobid/grobid:0.9.0-full registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
+
+      - name: Push image to Aliyun ACR
+        run: |
+          docker push registry.cn-hangzhou.aliyuncs.com/zgz521/grobid:0.9.0-full
